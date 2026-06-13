@@ -1,12 +1,13 @@
+version: "1"
 services:
   - type: web
     name: ueab-ims-api
-    env: node
     region: oregon
-    plan: free
+    env: node
     buildCommand: npm install
     startCommand: node src/server.js
     rootDir: backend
+    healthCheckPath: /api/health
     envVars:
       - key: NODE_ENV
         value: production
@@ -16,4 +17,3 @@ services:
         sync: false
       - key: JWT_SECRET
         value: ueab_ims_super_secret_change_me_in_production
-    healthCheckPath: /api/health
