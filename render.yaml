@@ -4,8 +4,8 @@ services:
     runtime: node
     region: oregon
     plan: free
-    buildCommand: npm install
-    startCommand: npm start
+    buildCommand: npm install --omit=dev
+    startCommand: node src/server.js
     rootDir: backend
     envVars:
       - key: NODE_ENV
@@ -13,8 +13,8 @@ services:
       - key: SUPABASE_URL
         value: https://nwydgwpcxlgseofmvbyy.supabase.co
       - key: SUPABASE_ANON_KEY
-        sync: false
+        fromSecret: supabase_anon_key
       - key: JWT_SECRET
-        sync: false
+        value: ueab_ims_super_secret_change_me_in_production
     healthCheckPath: /api/health
     autoDeploy: true
