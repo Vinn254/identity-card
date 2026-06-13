@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Dashboard — UEAB IMS</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/main.css" />
+</head>
+<body>
+  <div id="sidebar-slot"></div>
+  <main class="main">
+    <section class="card" style="margin-bottom:24px; background: linear-gradient(135deg, #003366, #002244); color:#fff;">
+      <div id="welcome-line" style="font-size:16px;">Loading...</div>
+    </section>
+
+    <section class="stat-grid">
+      <div class="stat-card">
+        <div class="stat-icon purple">📄</div>
+        <div>
+          <div class="stat-num" id="stat-lost">—</div>
+          <div class="stat-label">Lost Documents</div>
+        </div>
+        <a class="stat-link" href="my-reports.html?type=lost">View all →</a>
+      </div>
+      <div class="stat-card">
+        <div class="stat-icon green">📋</div>
+        <div>
+          <div class="stat-num" id="stat-found">—</div>
+          <div class="stat-label">Found Documents</div>
+        </div>
+        <a class="stat-link" href="my-reports.html?type=found">View all →</a>
+      </div>
+      <div class="stat-card">
+        <div class="stat-icon gold">✅</div>
+        <div>
+          <div class="stat-num" id="stat-recovered">—</div>
+          <div class="stat-label">Recovered Documents</div>
+        </div>
+        <a class="stat-link" href="my-reports.html?status=recovered">View all →</a>
+      </div>
+      <div class="stat-card">
+        <div class="stat-icon red">🔔</div>
+        <div>
+          <div class="stat-num" id="stat-notif">—</div>
+          <div class="stat-label">Notifications</div>
+        </div>
+        <a class="stat-link" href="notifications.html">View all →</a>
+      </div>
+    </section>
+
+    <h2 style="margin-top:32px; color: var(--ueab-navy); font-size:20px; font-weight:600;">Quick Actions</h2>
+    <section class="quick-grid">
+      <a class="quick-card" href="report-lost.html">
+        <div class="quick-icon">📄</div>
+        <div class="quick-text"><strong>Report Lost</strong><span>Document</span></div>
+      </a>
+      <a class="quick-card" href="report-found.html">
+        <div class="quick-icon">📋</div>
+        <div class="quick-text"><strong>Report Found</strong><span>Document</span></div>
+      </a>
+      <a class="quick-card" href="search.html">
+        <div class="quick-icon">🔊</div>
+        <div class="quick-text"><strong>Search</strong><span>Documents</span></div>
+      </a>
+      <a class="quick-card" href="my-reports.html">
+        <div class="quick-icon">📊</div>
+        <div class="quick-text"><strong>My Reports</strong><span>View all</span></div>
+      </a>
+    </section>
+  </main>
+
+  <script src="js/api.js"></script>
+  <script src="js/demo-mode.js"></script>
+  <script src="js/layout.js"></script>
+  <script>
+    buildAppLayout({ active: 'dashboard.html', title: 'Dashboard' });
+
+    (async function init() {
+      try {
+        const { user } = await API.me();
+        const greet = (() => {
+          const h = new Date().getHours();
+          if (h < 12) return 'Good morning';
+          if (h < 18) return 'Good afternoon';
+          return 'Good evening';
+        })();
+        document.getElementById('welcome-line').innerHTML = `${greet}, <b>${user.full_name}</b> — welcome to your UEAB IMS dashboard.`;
+
+        const s = await API.myStats();
+        document.getElementById('stat-lost').textContent      = s.lost;
+        document.getElementById('stat-found').textContent     = s.found;
+        document.getElementById('stat-recovered').textContent = s.recovered;
+        document.getElementById('stat-notif').textContent     = s.notifications;
+      } catch (err) {
+        toast(err.message, 'error');
+      }
+      loadNotifBadge();
+    })();
+  </script>
+</body>
+</html>

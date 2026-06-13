@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Report Found Document — UEAB IMS</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/main.css" />
+</head>
+<body>
+  <div id="sidebar-slot"></div>
+  <main class="main">
+    <div class="card" style="max-width:800px; border-top: 4px solid var(--status-found);">
+      <h3 style="margin:0 0 8px; color: var(--ueab-navy);">Report a Found Document</h3>
+      <p class="text-muted" style="margin: 0 0 20px;">Submit details of a document you have found. The system will check for matching lost reports and notify the owner.</p>
+
+      <form id="found-form" class="form-grid">
+        <div>
+          <label>Document Type</label>
+          <select name="document_type" required>
+            <option value="">Select document type</option>
+            <option>Student ID</option>
+            <option>National ID</option>
+            <option>Passport</option>
+            <option>Driver's License</option>
+            <option>Work Permit</option>
+            <option>Other</option>
+          </select>
+        </div>
+        <div>
+          <label>Document Number</label>
+          <input type="text" name="document_number" placeholder="Enter document number" required />
+        </div>
+        <div>
+          <label>Date Found</label>
+          <input type="date" name="date_found" required />
+        </div>
+        <div>
+          <label>Location Found</label>
+          <input type="text" name="location_found" placeholder="Enter location where document was found" required />
+        </div>
+        <div>
+          <label>Finder Contact (Phone)</label>
+          <input type="tel" name="finder_contact" placeholder="Enter your contact number" />
+        </div>
+        <div>
+          <label>Upload Document Image (Optional)</label>
+          <div class="dropzone" id="dropzone">
+            <input type="file" id="image" name="image" accept="image/*" hidden />
+            <div>📁 Click to upload or drag and drop</div>
+            <div style="font-size:12px; margin-top:6px;">PNG, JPG, WEBP up to 5MB</div>
+          </div>
+        </div>
+        <div class="full">
+          <label>Description (Optional)</label>
+          <textarea name="description" placeholder="Provide any additional details (condition, where you handed it over, etc.)"></textarea>
+        </div>
+        <div class="full">
+          <button type="submit" class="btn btn-primary" id="submit-btn" style="width:100%;">Submit Report</button>
+        </div>
+      </form>
+    </div>
+  </main>
+
+  <script src="js/api.js"></script>
+  <script src="js/demo-mode.js"></script>
+  <script src="js/layout.js"></script>
+  <script>
+    buildAppLayout({
+      active: 'report-found.html',
+      title: 'Report Found Document',
+      breadcrumb: 'Dashboard / Report Found',
+    });
+
+    const drop = document.getElementById('dropzone');
+    const file = document.getElementById('image');
+    drop.addEventListener('click', () => file.click());
+    ['dragover', 'dragenter'].forEach(ev => drop.addEventListener(ev, e => { e.preventDefault(); drop.classList.add('dragover'); }));
+    ['dragleave', 'drop'].forEach(ev => drop.addEventListener(ev, e => { e.preventDefault(); drop.classList.remove('dragover'); }));
+    drop.addEventListener('drop', e => { if (e.dataTransfer.files[0]) { file.files = e.dataTransfer.files; updateFileName(); } });
+    file.addEventListener('change', updateFileName);
+    function updateFileName() {
+      if (file.files[0]) drop.querySelector('div').textContent = '📎 ' + file.files[0].name;
+    }
+
+    document.getElementById('found-form').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const btn = document.getElementById('submit-btn');
+      btn.disabled = true;
+      btn.innerHTML = '<span class="spinner"></span> Submitting...';
+      try {
+        const data = Object.fromEntries(new FormData(e.target));
+        if (file.files[0]) data.image = file.files[0];
+        const res = await API.reportFound(data);
+        toast(res.message, 'success');
+        e.target.reset();
+        file.value = '';
+        drop.querySelector('div').textContent = '📁 Click to upload or drag and drop';
+        setTimeout(() => location.href = 'my-reports.html', 1000);
+      } catch (err) {
+        toast(err.message, 'error');
+        btn.disabled = false;
+        btn.textContent = 'Submit Report';
+      }
+    });
+    loadNotifBadge();
+  </script>
+</body>
+</html>

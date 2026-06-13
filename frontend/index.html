@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>UEAB IMS — Identification Management System for Lost & Found Documents</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/main.css" />
+  <style>
+    .navbar {
+      background: #fff;
+      border-bottom: 1px solid var(--ueab-blue-100);
+      box-shadow: 0 2px 4px rgba(0,0,0,.04);
+    }
+    .nav-container {
+      max-width: 1200px;
+      margin: 0 auto;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 20px;
+      height: 64px;
+    }
+    .nav-brand {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      text-decoration: none;
+      padding: 8px 0;
+    }
+    .nav-logo {
+      width: 42px;
+      height: 42px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, var(--ueab-navy), #002244);
+      display: grid;
+      place-items: center;
+      color: var(--ueab-gold);
+      font-weight: 800;
+      font-size: 14px;
+      border: 2px solid var(--ueab-gold);
+      letter-spacing: 0.5px;
+    }
+    .nav-brand-text {
+      display: flex;
+      flex-direction: column;
+      line-height: 1.2;
+    }
+    .nav-brand-text .name {
+      font-weight: 700;
+      font-size: 18px;
+      color: var(--ueab-navy);
+    }
+    .nav-brand-text .tagline {
+      font-size: 11px;
+      color: var(--ueab-gray);
+      font-weight: 400;
+    }
+    .nav-menu {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+    .nav-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 8px 12px;
+      color: var(--ueab-text);
+      font-weight: 500;
+      font-size: 14px;
+      border-radius: var(--radius-sm);
+      transition: all .15s ease;
+      white-space: nowrap;
+    }
+    .nav-link:hover {
+      background: var(--ueab-blue-50);
+      color: var(--ueab-navy);
+      text-decoration: none;
+    }
+    .nav-link.active {
+      color: var(--ueab-navy);
+      background: var(--ueab-blue-50);
+    }
+    .nav-link.has-dropdown::after {
+      content: "▼";
+      font-size: 10px;
+      margin-left: 4px;
+      opacity: .5;
+    }
+    .dropdown {
+      position: relative;
+    }
+    .dropdown-menu {
+      position: absolute;
+      top: 100%;
+      right: 0;
+      background: #fff;
+      min-width: 180px;
+      border-radius: var(--radius-sm);
+      box-shadow: var(--shadow-lg);
+      border: 1px solid var(--ueab-blue-100);
+      padding: 8px 0;
+      display: none;
+      z-index: 1000;
+    }
+    .dropdown:hover .dropdown-menu {
+      display: block;
+    }
+    .dropdown-menu a {
+      display: block;
+      padding: 10px 16px;
+      font-size: 14px;
+      color: var(--ueab-text);
+    }
+    .dropdown-menu a:hover {
+      background: var(--ueab-blue-50);
+      color: var(--ueab-navy);
+    }
+    .nav-cta {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+  </style>
+</head>
+<body>
+  <!-- Professional Navigation Bar -->
+  <nav class="navbar">
+    <div class="nav-container">
+      <a href="index.html" class="nav-brand">
+        <div class="nav-logo">UEAB</div>
+        <div class="nav-brand-text">
+          <span class="name">IMS</span>
+          <span class="tagline">Lost & Found Documents</span>
+        </div>
+      </a>
+      
+      <div class="nav-menu">
+        <a href="index.html" class="nav-link active">Home</a>
+        <a href="report-lost.html" class="nav-link">Report Lost</a>
+        <a href="report-found.html" class="nav-link">Report Found</a>
+        <a href="search.html" class="nav-link">Search</a>
+        <a href="about.html" class="nav-link">About</a>
+        
+        <div class="dropdown" id="user-dropdown" style="display:none;">
+          <a href="#" class="nav-link has-dropdown" id="user-menu-btn"></a>
+          <div class="dropdown-menu">
+            <a href="dashboard.html">Dashboard</a>
+            <a href="my-reports.html">My Reports</a>
+            <a href="notifications.html">Notifications</a>
+            <hr style="margin:6px 0; border:none; border-top:1px solid var(--ueab-blue-100);">
+            <a href="#" id="logout-btn">Logout</a>
+          </div>
+        </div>
+        
+        <div class="nav-cta" id="auth-cta">
+          <a href="login.html" class="btn btn-primary btn-sm">Login</a>
+        </div>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Hero -->
+  <section class="hero">
+    <h1>Helping Our Community Recover Lost<br/>Identification Documents Quickly and Securely</h1>
+    <p>Report lost documents, report found documents and help reunite important IDs with their rightful owners.</p>
+    <div class="hero-cta">
+      <a href="report-lost.html"  class="btn btn-primary">Report Lost Document</a>
+      <a href="report-found.html" class="btn btn-gold">Report Found Document</a>
+    </div>
+  </section>
+
+  <!-- Features -->
+  <section class="container">
+    <div class="feature-grid">
+      <div class="feature">
+        <h3>Report a Lost Document</h3>
+        <p class="text-muted">Quickly log your missing ID, passport, student card or driving licence into the system.</p>
+        <a href="report-lost.html" class="btn btn-outline btn-sm" style="margin-top:14px;">Get Started</a>
+      </div>
+      <div class="feature">
+        <h3>Report a Found Document</h3>
+        <p class="text-muted">Found someone's ID? Submit it through the platform so we can match and return it.</p>
+        <a href="report-found.html" class="btn btn-outline btn-sm" style="margin-top:14px;">Submit a Report</a>
+      </div>
+      <div class="feature">
+        <h3>Search the Database</h3>
+        <p class="text-muted">Search through lost and found records by document number, type or location.</p>
+        <a href="search.html" class="btn btn-outline btn-sm" style="margin-top:14px;">Search Now</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- Stats strip -->
+  <section class="container" style="padding-bottom:60px;">
+    <div class="card" style="background: linear-gradient(135deg, #003366, #002244); color:#fff;">
+      <div class="stat-grid" style="color:#fff;">
+        <div><div class="stat-num" style="color:#fff;">300+</div><div class="stat-label" style="color:#cfd8e3;">Registered Users</div></div>
+        <div><div class="stat-num" style="color:#fff;">75</div><div class="stat-label" style="color:#cfd8e3;">Lost Documents</div></div>
+        <div><div class="stat-num" style="color:#fff;">65</div><div class="stat-label" style="color:#cfd8e3;">Found Documents</div></div>
+        <div><div class="stat-num" style="color:#fff;">50</div><div class="stat-label" style="color:#cfd8e3;">Recovered</div></div>
+      </div>
+    </div>
+  </section>
+
+  <footer style="background:#001a33; color:#cfd8e3; padding:24px; text-align:center; font-size:13px;">
+    © 2026 University of Eastern Africa, Baraton — Identification Management System
+  </footer>
+
+  <script src="js/api.js"></script>
+  <script src="js/demo-mode.js"></script>
+  <script>
+    function updateHeaderAuth() {
+      const user = Auth.getUser();
+      const authCta = document.getElementById('auth-cta');
+      const userDropdown = document.getElementById('user-dropdown');
+      const userMenuBtn = document.getElementById('user-menu-btn');
+      
+      if (user) {
+        authCta.style.display = 'none';
+        userDropdown.style.display = 'block';
+        const initials = user.full_name ? user.full_name.trim().split(/\s+/).slice(0,2).map(s => s[0]?.toUpperCase()).join('') || '?' : '?';
+        userMenuBtn.textContent = initials + ' Menu';
+      } else {
+        authCta.style.display = 'flex';
+        userDropdown.style.display = 'none';
+      }
+    }
+    
+    document.getElementById('logout-btn')?.addEventListener('click', (e) => {
+      e.preventDefault();
+      Auth.clear();
+      location.href = 'index.html';
+    });
+    
+    updateHeaderAuth();
+  </script>
+</body>
+</html>

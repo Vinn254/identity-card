@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Report Lost Document — UEAB IMS</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/main.css" />
+</head>
+<body>
+  <div id="sidebar-slot"></div>
+  <main class="main">
+    <div class="card" style="max-width:800px; border-top: 4px solid var(--ueab-navy);">
+      <h3 style="margin:0 0 8px; color: var(--ueab-navy);">Report a Lost Document</h3>
+      <p class="text-muted" style="margin: 0 0 20px;">Fill in the details of the document you have lost. The system will automatically check for matching found reports.</p>
+
+      <form id="lost-form" class="form-grid">
+        <div>
+          <label>Document Type</label>
+          <select name="document_type" required>
+            <option value="">Select document type</option>
+            <option>Student ID</option>
+            <option>National ID</option>
+            <option>Passport</option>
+            <option>Driver's License</option>
+            <option>Work Permit</option>
+            <option>Other</option>
+          </select>
+        </div>
+        <div>
+          <label>Document Number</label>
+          <input type="text" name="document_number" placeholder="Enter document number" required />
+        </div>
+        <div>
+          <label>Date Lost</label>
+          <input type="date" name="date_lost" required />
+        </div>
+        <div>
+          <label>Location Lost</label>
+          <input type="text" name="location_lost" placeholder="Enter location where document was lost" />
+        </div>
+        <div class="full">
+          <label>Description (Optional)</label>
+          <textarea name="description" placeholder="Provide any additional details (color, distinguishing marks, etc.)"></textarea>
+        </div>
+        <div class="full">
+          <button type="submit" class="btn btn-primary" id="submit-btn" style="width:100%;">Submit Report</button>
+        </div>
+      </form>
+    </div>
+  </main>
+
+  <script src="js/api.js"></script>
+  <script src="js/demo-mode.js"></script>
+  <script src="js/layout.js"></script>
+  <script>
+    buildAppLayout({
+      active: 'report-lost.html',
+      title: 'Report Lost Document',
+      breadcrumb: 'Dashboard / Report Lost',
+    });
+
+    document.getElementById('lost-form').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const btn = document.getElementById('submit-btn');
+      btn.disabled = true;
+      btn.innerHTML = '<span class="spinner"></span> Submitting...';
+      try {
+        const data = Object.fromEntries(new FormData(e.target));
+        const res  = await API.reportLost(data);
+        toast(res.message, 'success');
+        e.target.reset();
+        setTimeout(() => location.href = 'my-reports.html', 1000);
+      } catch (err) {
+        toast(err.message, 'error');
+        btn.disabled = false;
+        btn.textContent = 'Submit Report';
+      }
+    });
+    loadNotifBadge();
+  </script>
+</body>
+</html>
