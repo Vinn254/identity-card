@@ -1,0 +1,20 @@
+services:
+  - type: web
+    name: ueab-ims-api
+    runtime: node
+    region: oregon
+    plan: free
+    buildCommand: npm install
+    startCommand: npm start
+    rootDir: backend
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: SUPABASE_URL
+        value: https://nwydgwpcxlgseofmvbyy.supabase.co
+      - key: SUPABASE_ANON_KEY
+        sync: false
+      - key: JWT_SECRET
+        sync: false
+    healthCheckPath: /api/health
+    autoDeploy: true
