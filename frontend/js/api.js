@@ -1,7 +1,7 @@
 /* =================================================================
-   UEAB IMS - Frontend API client
-   Tiny fetch wrapper that injects JWT and handles JSON.
-   ================================================================= */
+    UEAB IMS - Frontend API client
+    Tiny fetch wrapper that injects JWT and handles JSON.
+    ================================================================= */
 
 const API_BASE = (() => {
   // Allow override via window.API_BASE for local dev, else fall back to
@@ -11,6 +11,10 @@ const API_BASE = (() => {
   // If frontend is served on a different port, point at the API directly.
   if (location.port === '5500' || location.port === '8080' || location.port === '3000') {
     return 'http://localhost:5000/api';
+  }
+  // If served as static site, use the deployed backend
+  if (location.hostname.includes('onrender.com') || location.hostname.includes('netlify.app') || location.hostname.includes('vercel.app')) {
+    return 'https://identity-card-m486.onrender.com/api';
   }
   return '/api';
 })();
