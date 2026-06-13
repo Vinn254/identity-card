@@ -1,0 +1,8 @@
+services:
+  - type: web
+    name: ueab-ims-api
+    env: node
+    buildCommand: npm install
+    startCommand: node src/server.js
+    rootDir: backend
+    healthCheckPath: /api/health
