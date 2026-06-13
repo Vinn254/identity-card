@@ -1,4 +1,3 @@
-version: "1"
 services:
   - type: web
     name: ueab-ims-api
