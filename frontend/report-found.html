@@ -89,9 +89,9 @@
       btn.disabled = true;
       btn.innerHTML = '<span class="spinner"></span> Submitting...';
       try {
-        const data = Object.fromEntries(new FormData(e.target));
-        if (file.files[0]) data.image = file.files[0];
-        const res = await API.reportFound(data);
+        const fd = new FormData(e.target);
+        if (file.files[0]) fd.set('image', file.files[0]);
+        const res = await API.reportFound(fd);
         toast(res.message, 'success');
         e.target.reset();
         file.value = '';

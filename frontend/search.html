@@ -50,7 +50,7 @@
   <script src="js/api.js"></script>
   <script src="js/demo-mode.js"></script>
   <script src="js/layout.js"></script>
-  <script>
+<script>
     buildAppLayout({
       active: 'search.html',
       title: 'Search Documents',
@@ -73,8 +73,8 @@
           html += lost.map(r => `
             <tr>
               <td>${r.document_type}</td>
-              <td>${r.document_number}</td>
-              <td>${r.owner_name || '—'}</td>
+              <td>${maskDocNumber(r.document_number)}</td>
+              <td>${maskName(r.owner_name)}</td>
               <td>${r.location_lost || '—'}</td>
               <td>${fmtDateOnly(r.date_lost)}</td>
               <td><span class="badge badge-${r.status}">${r.status}</span></td>
@@ -88,8 +88,8 @@
           html += found.map(r => `
             <tr>
               <td>${r.document_type}</td>
-              <td>${r.document_number}</td>
-              <td>${r.finder_name || '—'}</td>
+              <td>${maskDocNumber(r.document_number)}</td>
+              <td>${maskName(r.finder_name)}</td>
               <td>${r.location_found || '—'}</td>
               <td>${fmtDateOnly(r.date_found)}</td>
               <td><span class="badge badge-${r.status}">${r.status}</span></td>

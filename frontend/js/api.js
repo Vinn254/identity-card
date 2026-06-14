@@ -45,8 +45,10 @@ async function api(path, { method = 'GET', body, formData, query } = {}) {
   const token = Auth.getToken();
   if (token) headers['Authorization'] = `Bearer ${token}`;
 
-  let payload = body;
-  if (body && !formData) {
+  let payload;
+  if (formData) {
+    payload = formData;
+  } else if (body) {
     headers['Content-Type'] = 'application/json';
     payload = JSON.stringify(body);
   }
@@ -88,12 +90,8 @@ const API = {
   updateLost:    (id, st) => api(`/lost/${id}/status`, { method: 'PATCH', body: { status: st } }),
   myStats:       ()       => api('/lost/stats/me'),
 
-  // found
-  reportFound:   (data)   => {
-    const fd = new FormData();
-    Object.entries(data).forEach(([k, v]) => v != null && fd.append(k, v));
-    return api('/found', { method: 'POST', formData: fd });
-  },
+// found
+   reportFound:   (formData)   => api('/found', { method: 'POST', formData }),
   myFound:       ()       => api('/found/mine'),
   updateFound:   (id, st) => api(`/found/${id}/status`, { method: 'PATCH', body: { status: st } }),
 
@@ -147,4 +145,18 @@ function fmtDateOnly(iso) {
 
 function initials(name = '') {
   return name.trim().split(/\s+/).slice(0, 2).map(s => s[0]?.toUpperCase()).join('') || '?';
+}
+
+function maskDocNumber(num) {
+  if (!num || num.length <= 4) return num;
+  const visible = Math.min(4, Math.floor(num.length / 4));
+  const last4 = num.slice(-4);
+  return '•'.repeat(num.length - 4) + last4;
+}
+
+function maskName(name) {
+  if (!name) return '—';
+  const parts = name.trim().split(/\s+/);
+  if (parts.length === 1) return parts[0].charAt(0) + '••••';
+  return parts[0].charAt(0) + '•• ' + parts[parts.length - 1].charAt(0) + '••';
 }
