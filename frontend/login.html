@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Login — UEAB IMS</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/main.css" />
+  <style>
+    .header-section {
+      background: linear-gradient(135deg, #003366, #002244);
+      color: #fff;
+      padding: 30px 20px 20px;
+      text-align: center;
+    }
+    .header-section .logo {
+      width: 60px;
+      height: 60px;
+      border-radius: 50%;
+      border: 2px solid var(--ueab-gold);
+      display: grid;
+      place-items: center;
+      font-weight: 800;
+      font-size: 20px;
+      color: var(--ueab-gold);
+      margin: 0 auto 12px;
+      background: rgba(255,255,255,.1);
+    }
+    .header-section h2 {
+      margin: 0 0 6px;
+      font-size: 22px;
+    }
+    .header-section p {
+      opacity: .85;
+      font-size: 13px;
+      margin: 0;
+    }
+    .auth-wrap {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 40px 20px;
+      background: var(--ueab-blue-50);
+      min-height: calc(100vh - 140px);
+    }
+  </style>
+</head>
+<body>
+  <div class="header-section">
+    <div class="logo">UEAB</div>
+    <h2>University of Eastern Africa, Baraton</h2>
+    <p>"Arise and Shine" — Isaiah 60:1</p>
+  </div>
+  
+  <div class="auth-wrap">
+    <div class="auth-card" style="width:100%; max-width:420px;">
+      <h1>Welcome Back!</h1>
+      <p class="sub">Login to your account</p>
+
+      <form id="login-form">
+        <div style="margin-bottom:16px;">
+          <label for="email">Email or Registration Number</label>
+          <input type="text" id="email" name="email" placeholder="Enter email or registration number" required />
+        </div>
+        <div style="margin-bottom:24px;">
+          <label for="password">Password</label>
+          <div style="position:relative;">
+            <input type="password" id="password" name="password" placeholder="Enter your password" required style="padding-right:42px;" />
+            <button type="button" id="toggle-pw" style="position:absolute; right:10px; top:50%; transform:translateY(-50%); background:none; border:none; cursor:pointer; color:var(--ueab-gray);">👁</button>
+          </div>
+        </div>
+        <button type="submit" class="btn btn-primary" style="width:100%;" id="login-btn">Login</button>
+      </form>
+
+      <p class="text-center" style="margin-top:24px; font-size:14px;">
+        Don't have an account? <a href="register.html">Register here</a>
+      </p>
+    </div>
+  </div>
+
+  <script src="js/api.js"></script>
+  <script src="js/demo-mode.js"></script>
+  <script>
+    document.getElementById('toggle-pw').addEventListener('click', () => {
+      const pw = document.getElementById('password');
+      pw.type = pw.type === 'password' ? 'text' : 'password';
+    });
+
+    document.getElementById('login-form').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const btn = document.getElementById('login-btn');
+      const original = btn.textContent;
+      btn.disabled = true;
+      btn.innerHTML = '<span class="spinner"></span> Logging in...';
+      try {
+        const { token, user } = await API.login({
+          email: e.target.email.value.trim(),
+          password: e.target.password.value,
+        });
+        Auth.setSession(token, user);
+        toast('Welcome back, ' + user.full_name + '!', 'success');
+        setTimeout(() => location.href = 'dashboard.html', 600);
+      } catch (err) {
+        toast(err.message, 'error');
+        btn.disabled = false;
+        btn.textContent = original;
+      }
+    });
+
+    if (Auth.isLoggedIn()) location.href = 'dashboard.html';
+  </script>
+</body>
+</html>

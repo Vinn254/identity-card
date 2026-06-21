@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Admin Dashboard — UEAB IMS</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/main.css" />
+</head>
+<body>
+  <div id="sidebar-slot"></div>
+  <main class="main">
+    <section class="stat-grid">
+      <div class="stat-card">
+        <div class="stat-icon purple">👥</div>
+        <div>
+          <div class="stat-num" id="a-users">—</div>
+          <div class="stat-label">Users</div>
+        </div>
+        <a class="stat-link" href="#" data-jump="users">View all →</a>
+      </div>
+      <div class="stat-card">
+        <div class="stat-icon red">📄</div>
+        <div>
+          <div class="stat-num" id="a-lost">—</div>
+          <div class="stat-label">Lost Documents</div>
+        </div>
+        <a class="stat-link" href="#" data-jump="reports">View all →</a>
+      </div>
+      <div class="stat-card">
+        <div class="stat-icon green">📋</div>
+        <div>
+          <div class="stat-num" id="a-found">—</div>
+          <div class="stat-label">Found Documents</div>
+        </div>
+        <a class="stat-link" href="#" data-jump="reports">View all →</a>
+      </div>
+      <div class="stat-card">
+        <div class="stat-icon gold">✅</div>
+        <div>
+          <div class="stat-num" id="a-recovered">—</div>
+          <div class="stat-label">Recovered</div>
+        </div>
+        <a class="stat-link" href="#" data-jump="matches">View all →</a>
+      </div>
+    </section>
+
+    <div class="card" style="margin-top:24px;">
+      <h2 style="margin:0 0 12px; color: var(--ueab-navy); font-size:18px;">Recent Reports</h2>
+      <div class="table-wrap" style="box-shadow:none;">
+        <table>
+          <thead>
+            <tr><th>Type</th><th>Document Number</th><th>Status</th><th>Owner</th><th>Date</th><th>Action</th></tr>
+          </thead>
+          <tbody id="recent-tbody">
+            <tr><td colspan="6" class="text-center text-muted">Loading...</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <div id="users-section" class="card" style="margin-top:24px; display:none;">
+      <h2 style="margin:0 0 12px; color: var(--ueab-navy); font-size:18px;">User Management</h2>
+      <div class="table-wrap" style="box-shadow:none;">
+        <table>
+          <thead><tr><th>Name</th><th>Email</th><th>Reg #</th><th>Role</th><th>Status</th><th>Action</th></tr></thead>
+          <tbody id="users-tbody"><tr><td colspan="6" class="text-center text-muted">Loading...</td></tr></tbody>
+        </table>
+      </div>
+    </div>
+
+    <div id="matches-section" class="card" style="margin-top:24px; display:none;">
+      <h2 style="margin:0 0 12px; color: var(--ueab-navy); font-size:18px;">Document Matches</h2>
+      <div class="table-wrap" style="box-shadow:none;">
+        <table>
+          <thead><tr><th>Document</th><th>Number</th><th>Owner</th><th>Finder</th><th>Found At</th><th>Date Found</th></tr></thead>
+          <tbody id="matches-tbody"><tr><td colspan="6" class="text-center text-muted">Loading...</td></tr></tbody>
+        </table>
+      </div>
+    </div>
+
+    <div id="activity-section" class="card" style="margin-top:24px; display:none;">
+      <h2 style="margin:0 0 12px; color: var(--ueab-navy); font-size:18px;">Activity Log</h2>
+      <div class="table-wrap" style="box-shadow:none;">
+        <table>
+          <thead><tr><th>When</th><th>Actor</th><th>Action</th><th>Entity</th><th>Details</th></tr></thead>
+          <tbody id="activity-tbody"><tr><td colspan="5" class="text-center text-muted">Loading...</td></tr></tbody>
+        </table>
+      </div>
+    </div>
+  </main>
+
+  <script src="js/api.js"></script>
+  <script src="js/demo-mode.js"></script>
+  <script src="js/layout.js"></script>
+  <script>
+    buildAppLayout({
+      active: 'admin.html',
+      title: 'Admin Dashboard',
+      breadcrumb: 'Dashboard / Admin',
+    });
+
+    // Guard
+    if (!Auth.isAdmin()) {
+      toast('Admin access only', 'error');
+      setTimeout(() => location.href = 'dashboard.html', 800);
+    }
+
+    async function loadOverview() {
+      const o = await API.adminOverview();
+      document.getElementById('a-users').textContent     = o.users;
+      document.getElementById('a-lost').textContent      = o.lost;
+      document.getElementById('a-found').textContent     = o.found;
+      document.getElementById('a-recovered').textContent = o.recovered;
+    }
+
+    async function loadRecent() {
+      const { reports } = await API.adminReports();
+      const recent = reports.slice(0, 8);
+      const tbody = document.getElementById('recent-tbody');
+      if (!recent.length) { tbody.innerHTML = '<tr><td colspan="6" class="text-center text-muted">No reports yet</td></tr>'; return; }
+      tbody.innerHTML = recent.map(r => `
+        <tr>
+          <td><span class="badge ${r.report_type === 'lost' ? 'badge-lost' : 'badge-found'}">${r.report_type}</span></td>
+          <td>${r.document_type} — ${r.document_number}</td>
+          <td><span class="badge badge-${r.status}">${r.status}</span></td>
+          <td>${r.owner_name}</td>
+          <td>${fmtDate(r.created_at)}</td>
+          <td><a href="#" class="btn btn-ghost btn-sm">View</a></td>
+        </tr>
+      `).join('');
+    }
+
+    async function loadUsers() {
+      const { users } = await API.adminUsers();
+      const tbody = document.getElementById('users-tbody');
+      if (!users.length) { tbody.innerHTML = '<tr><td colspan="6" class="text-center text-muted">No users</td></tr>'; return; }
+      tbody.innerHTML = users.map(u => `
+        <tr>
+          <td>${u.full_name}</td>
+          <td>${u.email}</td>
+          <td>${u.registration_number || '—'}</td>
+          <td>${u.role}</td>
+          <td><span class="badge ${u.is_active ? 'badge-found' : 'badge-lost'}">${u.is_active ? 'active' : 'inactive'}</span></td>
+          <td>
+            <button class="btn ${u.is_active ? 'btn-danger' : 'btn-primary'} btn-sm" data-toggle="${u.id}" data-state="${u.is_active}">
+              ${u.is_active ? 'Deactivate' : 'Activate'}
+            </button>
+          </td>
+        </tr>
+      `).join('');
+      tbody.querySelectorAll('[data-toggle]').forEach(b => b.addEventListener('click', async () => {
+        const newState = b.dataset.state === '1' ? 0 : 1;
+        if (!confirm(`${newState ? 'Activate' : 'Deactivate'} this user?`)) return;
+        try {
+          await API.setUserActive(b.dataset.toggle, !!newState);
+          toast('User updated', 'success');
+          loadUsers();
+        } catch (e) { toast(e.message, 'error'); }
+      }));
+    }
+
+    async function loadMatches() {
+      const { matches } = await API.adminMatches();
+      const tbody = document.getElementById('matches-tbody');
+      if (!matches.length) { tbody.innerHTML = '<tr><td colspan="6" class="text-center text-muted">No matches yet</td></tr>'; return; }
+      tbody.innerHTML = matches.map(m => `
+        <tr>
+          <td>${m.document_type}</td>
+          <td>${m.document_number}</td>
+          <td>${m.owner_name}</td>
+          <td>${m.finder_name}</td>
+          <td>${m.location_found || '—'}</td>
+          <td>${fmtDateOnly(m.date_found)}</td>
+        </tr>
+      `).join('');
+    }
+
+    async function loadActivity() {
+      const { activity } = await API.adminActivity();
+      const tbody = document.getElementById('activity-tbody');
+      if (!activity.length) { tbody.innerHTML = '<tr><td colspan="5" class="text-center text-muted">No activity yet</td></tr>'; return; }
+      tbody.innerHTML = activity.map(a => `
+        <tr>
+          <td>${fmtDate(a.created_at)}</td>
+          <td>${a.full_name || 'system'} <small class="text-muted">(${a.role || '—'})</small></td>
+          <td>${a.action}</td>
+          <td>${a.entity_type || '—'} #${a.entity_id || ''}</td>
+          <td class="text-muted">${a.details || ''}</td>
+        </tr>
+      `).join('');
+    }
+
+    document.querySelectorAll('[data-jump]').forEach(el => el.addEventListener('click', e => {
+      e.preventDefault();
+      const target = el.dataset.jump;
+      const sec = document.getElementById(target + '-section');
+      if (!sec) return;
+      sec.style.display = 'block';
+      sec.scrollIntoView({ behavior: 'smooth' });
+      if (target === 'users'   && !sec.dataset.loaded) { loadUsers();    sec.dataset.loaded = '1'; }
+      if (target === 'matches' && !sec.dataset.loaded) { loadMatches();  sec.dataset.loaded = '1'; }
+      if (target === 'activity' && !sec.dataset.loaded) { loadActivity(); sec.dataset.loaded = '1'; }
+    }));
+
+    (async function init() {
+      try {
+        await loadOverview();
+        await loadRecent();
+      } catch (err) {
+        toast(err.message, 'error');
+      }
+    })();
+    loadNotifBadge();
+  </script>
+</body>
+</html>

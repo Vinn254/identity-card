@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>About — UEAB IMS</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/main.css" />
+  <style>
+    .navbar {
+      background: #fff;
+      border-bottom: 1px solid var(--ueab-blue-100);
+      box-shadow: 0 2px 4px rgba(0,0,0,.04);
+    }
+    .nav-container {
+      max-width: 1200px;
+      margin: 0 auto;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 20px;
+      height: 64px;
+    }
+    .nav-brand {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      text-decoration: none;
+      padding: 8px 0;
+    }
+    .nav-logo {
+      width: 42px;
+      height: 42px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, var(--ueab-navy), #002244);
+      display: grid;
+      place-items: center;
+      color: var(--ueab-gold);
+      font-weight: 800;
+      font-size: 14px;
+      border: 2px solid var(--ueab-gold);
+      letter-spacing: 0.5px;
+    }
+    .nav-brand-text {
+      display: flex;
+      flex-direction: column;
+      line-height: 1.2;
+    }
+    .nav-brand-text .name {
+      font-weight: 700;
+      font-size: 18px;
+      color: var(--ueab-navy);
+    }
+    .nav-brand-text .tagline {
+      font-size: 11px;
+      color: var(--ueab-gray);
+      font-weight: 400;
+    }
+    .nav-menu {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+    .nav-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 8px 12px;
+      color: var(--ueab-text);
+      font-weight: 500;
+      font-size: 14px;
+      border-radius: var(--radius-sm);
+      transition: all .15s ease;
+    }
+    .nav-link:hover {
+      background: var(--ueab-blue-50);
+      color: var(--ueab-navy);
+      text-decoration: none;
+    }
+    .nav-link.active {
+      color: var(--ueab-navy);
+      background: var(--ueab-blue-50);
+    }
+    .mobile-menu-btn {
+      display: none;
+      background: none;
+      border: none;
+      font-size: 24px;
+      cursor: pointer;
+      color: var(--ueab-navy);
+      padding: 8px;
+    }
+    .mobile-menu {
+      display: none;
+      position: fixed;
+      top: 64px;
+      left: 0;
+      right: 0;
+      background: #fff;
+      z-index: 100;
+      padding: 20px;
+      box-shadow: 0 4px 12px rgba(0,0,0,.1);
+    }
+    .mobile-menu.active { display: block; }
+    .mobile-menu a {
+      display: block;
+      padding: 16px;
+      font-size: 16px;
+      color: var(--ueab-text);
+      border-bottom: 1px solid var(--ueab-blue-100);
+    }
+    .mobile-menu a:last-child { border-bottom: none; }
+    @media (max-width: 900px) {
+      .nav-menu { display: none; }
+      .mobile-menu-btn { display: block; }
+    }
+  </style>
+</head>
+<body>
+  <nav class="navbar">
+    <div class="nav-container">
+      <a href="index.html" class="nav-brand">
+        <div class="nav-logo">UEAB</div>
+        <div class="nav-brand-text">
+          <span class="name">IMS</span>
+          <span class="tagline">Lost & Found Documents</span>
+        </div>
+      </a>
+      
+      <button class="mobile-menu-btn" id="mobile-menu-btn">☰</button>
+      
+      <div class="nav-menu" id="nav-menu">
+        <a href="index.html" class="nav-link">Home</a>
+        <a href="report-lost.html" class="nav-link">Report Lost</a>
+        <a href="report-found.html" class="nav-link">Report Found</a>
+        <a href="search.html" class="nav-link">Search</a>
+        <a href="about.html" class="nav-link active">About</a>
+        <a href="login.html" class="btn btn-primary btn-sm">Login</a>
+      </div>
+    </div>
+    
+    <div class="mobile-menu" id="mobile-menu">
+      <a href="index.html">Home</a>
+      <a href="report-lost.html">Report Lost Document</a>
+      <a href="report-found.html">Report Found Document</a>
+      <a href="search.html">Search Database</a>
+      <a href="about.html">About</a>
+      <a href="login.html">Login</a>
+    </div>
+  </nav>
+
+  <main class="container" style="padding: 60px 20px; max-width: 800px;">
+    <div class="card">
+      <h1 style="color: var(--ueab-navy); margin-top:0;">About this project</h1>
+      <p class="text-muted">
+        <b>Identification Management System for Lost and Found Documents</b> is a senior project (INSY 492)
+        developed at the University of Eastern Africa, Baraton — School of Business, Department of Information Systems and Computing.
+      </p>
+      <p>It provides a centralized, secure web platform for the university community to report lost or found identification
+        documents, search the system database, and be automatically notified when a match is found.</p>
+
+      <h2 style="color: var(--ueab-navy); margin-top: 32px;">Project details</h2>
+      <ul>
+        <li><b>Student:</b> Milka Anyango Oloo</li>
+        <li><b>Student ID:</b> SOLOMI2111</li>
+        <li><b>Course Instructor:</b> Mr. Omari Dickson</li>
+        <li><b>Supervisor:</b> Dr. Rose Nyamwamu</li>
+        <li><b>Department:</b> Information Systems and Computing</li>
+        <li><b>Course:</b> INSY 492 — Senior Project</li>
+      </ul>
+
+      <h2 style="color: var(--ueab-navy); margin-top: 32px;">Modules</h2>
+      <ol>
+        <li>User registration &amp; authentication</li>
+        <li>Lost document reporting</li>
+        <li>Found document reporting</li>
+        <li>Document search</li>
+        <li>Document matching (automatic)</li>
+        <li>Notifications</li>
+        <li>Admin management</li>
+        <li>Reports &amp; analytics</li>
+      </ol>
+    </div>
+  </main>
+
+  <script>
+    document.getElementById('mobile-menu-btn')?.addEventListener('click', () => {
+      document.getElementById('mobile-menu').classList.toggle('active');
+    });
+  </script>
+</body>
+</html>

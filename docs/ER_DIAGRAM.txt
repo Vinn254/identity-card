@@ -1,0 +1,52 @@
+================================================================================
+  UEAB IMS — ER DIAGRAM (text rendering)
+================================================================================
+
+        ┌────────────┐         ┌──────────────────┐        ┌──────────────────┐
+        │   USERS    │ 1     N │ LOST_DOCUMENTS   │        │ FOUND_DOCUMENTS  │
+        │------------│◄────────│------------------│        │------------------│
+        │ id (PK)    │         │ id (PK)          │ M    1 │ id (PK)          │
+        │ full_name  │         │ user_id (FK)     │◄───────│ matched_with_id  │
+        │ email      │         │ document_type    │        │ user_id (FK)     │
+        │ reg_no     │         │ document_number  │        │ document_type    │
+        │ phone      │         │ date_lost        │        │ document_number  │
+        │ password   │         │ location_lost    │        │ date_found       │
+        │ role       │         │ description      │        │ location_found   │
+        │ is_active  │         │ status           │        │ finder_contact   │
+        │ created_at │         │ matched_with_id  │        │ image_path       │
+        │ updated_at │         │ created_at       │        │ status           │
+        └─────┬──────┘         │ updated_at       │        │ created_at       │
+              │ 1              └────────┬─────────┘        │ updated_at       │
+              │                         │                  └────────┬─────────┘
+              │                         │                           │
+              │ N                       │ N                         │ N
+              │                         ▼                           ▼
+              │                ┌──────────────────────────────────────┐
+              └───────────────►│            NOTIFICATIONS            │
+                               │--------------------------------------│
+                               │ id (PK)                              │
+                               │ user_id (FK → users.id)              │
+                               │ title                                │
+                               │ message                              │
+                               │ type   (info|match|success|...)      │
+                               │ is_read                              │
+                               │ related_lost_id   (FK, optional)    │
+                               │ related_found_id  (FK, optional)    │
+                               │ created_at                          │
+                               └──────────────────────────────────────┘
+
+                                              ▲
+                                              │
+                                              │ (system actions)
+                                              │
+                                  ┌───────────────────┐
+                                  │   ACTIVITY_LOG    │
+                                  │-------------------|
+                                  │ id (PK)           │
+                                  │ user_id (FK, nul) │
+                                  │ action            │
+                                  │ entity_type       │
+                                  │ entity_id         │
+                                  │ details           │
+                                  │ created_at        │
+                                  └───────────────────┘

@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Search Documents — UEAB IMS</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/main.css" />
+</head>
+<body>
+  <div id="sidebar-slot"></div>
+  <main class="main">
+    <div class="card" style="margin-bottom:24px;">
+      <h3 style="margin:0 0 16px; color: var(--ueab-navy);">Search Documents</h3>
+      <form id="search-form" style="display:grid; grid-template-columns: 1fr 1fr auto auto; gap:12px; align-items:end;">
+        <div>
+          <label>Search By</label>
+          <select name="type" id="filter-type">
+            <option value="">All types</option>
+            <option>Student ID</option>
+            <option>National ID</option>
+            <option>Passport</option>
+            <option>Driver's License</option>
+            <option>Work Permit</option>
+            <option>Other</option>
+          </select>
+        </div>
+        <div>
+          <label>Document Number</label>
+          <input type="text" name="doc_number" placeholder="Enter document number" />
+        </div>
+        <div>
+          <label>Status</label>
+          <select name="status">
+            <option value="">Any</option>
+            <option value="pending">Pending</option>
+            <option value="matched">Matched</option>
+            <option value="recovered">Recovered</option>
+            <option value="closed">Closed</option>
+          </select>
+        </div>
+        <button type="submit" class="btn btn-primary">Search</button>
+      </form>
+    </div>
+
+    <h3 style="color: var(--ueab-navy); font-size:18px; margin-bottom:16px;">Search Results</h3>
+    <div id="results"></div>
+  </main>
+
+  <script src="js/api.js"></script>
+  <script src="js/demo-mode.js"></script>
+  <script src="js/layout.js"></script>
+<script>
+    buildAppLayout({
+      active: 'search.html',
+      title: 'Search Documents',
+      breadcrumb: 'Dashboard / Search Documents',
+    });
+
+    async function runSearch(params = {}) {
+      const host = document.getElementById('results');
+      host.innerHTML = '<div class="card text-center text-muted">Searching...</div>';
+      try {
+        const { lost, found } = await API.search(params);
+        if ((!lost || lost.length === 0) && (!found || found.length === 0)) {
+          host.innerHTML = '<div class="card text-center text-muted">No matching records found.</div>';
+          return;
+        }
+        let html = '';
+        if (lost && lost.length) {
+          html += `<h4 style="color: var(--ueab-navy); margin: 16px 0 8px;">Lost Reports (${lost.length})</h4>`;
+          html += '<div class="table-wrap"><table><thead><tr><th>Type</th><th>Number</th><th>Owner</th><th>Location</th><th>Date Lost</th><th>Status</th></tr></thead><tbody>';
+          html += lost.map(r => `
+            <tr>
+              <td>${r.document_type}</td>
+              <td>${maskDocNumber(r.document_number)}</td>
+              <td>${maskName(r.owner_name)}</td>
+              <td>${r.location_lost || '—'}</td>
+              <td>${fmtDateOnly(r.date_lost)}</td>
+              <td><span class="badge badge-${r.status}">${r.status}</span></td>
+            </tr>
+          `).join('');
+          html += '</tbody></table></div>';
+        }
+        if (found && found.length) {
+          html += `<h4 style="color: var(--ueab-navy); margin: 24px 0 8px;">Found Reports (${found.length})</h4>`;
+          html += '<div class="table-wrap"><table><thead><tr><th>Type</th><th>Number</th><th>Finder</th><th>Location</th><th>Date Found</th><th>Status</th></tr></thead><tbody>';
+          html += found.map(r => `
+            <tr>
+              <td>${r.document_type}</td>
+              <td>${maskDocNumber(r.document_number)}</td>
+              <td>${maskName(r.finder_name)}</td>
+              <td>${r.location_found || '—'}</td>
+              <td>${fmtDateOnly(r.date_found)}</td>
+              <td><span class="badge badge-${r.status}">${r.status}</span></td>
+            </tr>
+          `).join('');
+          html += '</tbody></table></div>';
+        }
+        host.innerHTML = html;
+      } catch (err) {
+        host.innerHTML = `<div class="card text-center" style="color: var(--status-lost);">${err.message}</div>`;
+      }
+    }
+
+    document.getElementById('search-form').addEventListener('submit', e => {
+      e.preventDefault();
+      const f = e.target;
+      runSearch({
+        type: f.type.value,
+        doc_number: f.doc_number.value,
+        status: f.status.value,
+      });
+    });
+
+    runSearch();
+    loadNotifBadge();
+  </script>
+</body>
+</html>

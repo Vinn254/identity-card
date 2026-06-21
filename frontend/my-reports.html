@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>My Reports — UEAB IMS</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/main.css" />
+</head>
+<body>
+  <div id="sidebar-slot"></div>
+  <main class="main">
+    <div class="card" style="margin-bottom:20px;">
+      <h3 style="margin:0 0 16px; color: var(--ueab-navy);">My Reports</h3>
+      <div style="display:flex; gap:8px;">
+        <button class="btn btn-primary btn-sm" data-tab="lost">My Lost Reports</button>
+        <button class="btn btn-outline btn-sm" data-tab="found">My Found Reports</button>
+      </div>
+    </div>
+
+    <div id="report-list">
+      <div class="card text-center text-muted">Loading...</div>
+    </div>
+  </main>
+
+  <script src="js/api.js"></script>
+  <script src="js/demo-mode.js"></script>
+  <script src="js/layout.js"></script>
+  <script>
+    buildAppLayout({
+      active: 'my-reports.html',
+      title: 'My Reports',
+      breadcrumb: 'Dashboard / My Reports',
+    });
+
+    const urlType = new URLSearchParams(location.search).get('type');
+    let currentTab = urlType === 'found' ? 'found' : 'lost';
+
+    function setActiveTab() {
+      document.querySelectorAll('[data-tab]').forEach(b => {
+        b.className = (b.dataset.tab === currentTab ? 'btn btn-primary btn-sm' : 'btn btn-outline btn-sm');
+      });
+    }
+
+    async function load() {
+      setActiveTab();
+      const host = document.getElementById('report-list');
+      host.innerHTML = '<div class="card text-center text-muted">Loading...</div>';
+      try {
+        if (currentTab === 'lost') {
+          const { lost } = await API.myLost();
+          if (!lost.length) { host.innerHTML = '<div class="card text-center text-muted">You have not reported any lost documents yet.</div>'; return; }
+          host.innerHTML = '<div class="table-wrap"><table><thead><tr><th>Type</th><th>Number</th><th>Date Lost</th><th>Location</th><th>Status</th><th>Action</th></tr></thead><tbody>' +
+            lost.map(r => `
+              <tr>
+                <td>${r.document_type}</td>
+                <td>${r.document_number}</td>
+                <td>${fmtDateOnly(r.date_lost)}</td>
+                <td>${r.location_lost || '—'}</td>
+                <td><span class="badge badge-${r.status}">${r.status}</span></td>
+                <td>
+                  ${r.status === 'matched' ? `<button class="btn btn-gold btn-sm" data-recover="${r.id}">Mark recovered</button>` : ''}
+                  ${r.status === 'recovered' || r.status === 'closed' ? '—' : ''}
+                </td>
+              </tr>
+            `).join('') + '</tbody></table></div>';
+          host.querySelectorAll('[data-recover]').forEach(b => b.addEventListener('click', async () => {
+            await API.updateLost(b.dataset.recover, 'recovered');
+            toast('Marked as recovered 🎉', 'success');
+            load();
+          }));
+        } else {
+          const { found } = await API.myFound();
+          if (!found.length) { host.innerHTML = '<div class="card text-center text-muted">You have not reported any found documents yet.</div>'; return; }
+          host.innerHTML = '<div class="table-wrap"><table><thead><tr><th>Type</th><th>Number</th><th>Date Found</th><th>Location</th><th>Status</th><th>Action</th></tr></thead><tbody>' +
+            found.map(r => `
+              <tr>
+                <td>${r.document_type}</td>
+                <td>${r.document_number}</td>
+                <td>${fmtDateOnly(r.date_found)}</td>
+                <td>${r.location_found}</td>
+                <td><span class="badge badge-${r.status}">${r.status}</span></td>
+                <td>
+                  ${r.status === 'matched' ? `<button class="btn btn-gold btn-sm" data-claim="${r.id}">Mark claimed</button>` : ''}
+                  ${r.status === 'claimed' || r.status === 'closed' ? '—' : ''}
+                </td>
+              </tr>
+            `).join('') + '</tbody></table></div>';
+          host.querySelectorAll('[data-claim]').forEach(b => b.addEventListener('click', async () => {
+            await API.updateFound(b.dataset.claim, 'claimed');
+            toast('Marked as claimed', 'success');
+            load();
+          }));
+        }
+      } catch (err) {
+        host.innerHTML = `<div class="card" style="color: var(--status-lost);">${err.message}</div>`;
+      }
+    }
+
+    document.querySelectorAll('[data-tab]').forEach(b => b.addEventListener('click', () => {
+      currentTab = b.dataset.tab;
+      load();
+    }));
+
+    load();
+    loadNotifBadge();
+  </script>
+</body>
+</html>

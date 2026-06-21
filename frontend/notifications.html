@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Notifications — UEAB IMS</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/main.css" />
+</head>
+<body>
+  <div id="sidebar-slot"></div>
+  <main class="main">
+    <div class="card" style="margin-bottom:20px; display:flex; justify-content:space-between; align-items:center;">
+      <p class="text-muted" style="margin:0;">Stay up to date with matches, status changes and system alerts.</p>
+      <button class="btn btn-outline btn-sm" id="mark-all-btn">Mark all as read</button>
+    </div>
+
+    <div class="notif-list" id="notif-list">
+      <div class="card text-center text-muted">Loading...</div>
+    </div>
+  </main>
+
+  <script src="js/api.js"></script>
+  <script src="js/demo-mode.js"></script>
+  <script src="js/layout.js"></script>
+  <script>
+    buildAppLayout({
+      active: 'notifications.html',
+      title: 'Notifications',
+      breadcrumb: 'Dashboard / Notifications',
+    });
+
+    function iconFor(type) {
+      return ({ match: '🤝', success: '✅', warning: '⚠️', info: 'ℹ️', system: '🛡' }[type] || '🔔');
+    }
+
+    async function load() {
+      const list = document.getElementById('notif-list');
+      try {
+        const { notifications } = await API.listNotifs();
+        if (!notifications.length) {
+          list.innerHTML = '<div class="card text-center text-muted">You have no notifications yet.</div>';
+          return;
+        }
+        list.innerHTML = notifications.map(n => `
+          <div class="notif ${n.type} ${n.is_read ? '' : 'unread'}" data-id="${n.id}">
+            <div class="ico">${iconFor(n.type)}</div>
+            <div style="flex:1;">
+              <h4>${n.title}</h4>
+              <p>${n.message}</p>
+              <time>${fmtDate(n.created_at)}</time>
+            </div>
+            ${n.is_read ? '' : '<button class="btn btn-ghost btn-sm" data-mark>Mark read</button>'}
+          </div>
+        `).join('');
+        list.querySelectorAll('[data-mark]').forEach(btn => {
+          btn.addEventListener('click', async (e) => {
+            const id = e.target.closest('.notif').dataset.id;
+            await API.markRead(id);
+            loadNotifBadge();
+            load();
+          });
+        });
+      } catch (err) {
+        list.innerHTML = `<div class="card" style="color: var(--status-lost);">${err.message}</div>`;
+      }
+    }
+
+    document.getElementById('mark-all-btn').addEventListener('click', async () => {
+      await API.markAllRead();
+      loadNotifBadge();
+      load();
+      toast('All notifications marked as read', 'success');
+    });
+
+    load();
+    loadNotifBadge();
+  </script>
+</body>
+</html>

@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Create Account — UEAB IMS</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/main.css" />
+</head>
+<body>
+  <div class="auth-page">
+    <div class="auth-banner">
+      <div class="brand-logo">UEAB</div>
+      <h2>University of Eastern Africa, Baraton</h2>
+      <p>Join the community helping us reunite lost IDs with their owners.</p>
+    </div>
+    <div class="auth-form-wrap">
+      <div class="auth-card">
+        <h1>Create an Account</h1>
+        <p class="sub">Fill in your details to get started</p>
+
+        <form id="register-form" class="form-grid">
+          <div>
+            <label for="full_name">Full Name</label>
+            <input type="text" id="full_name" name="full_name" placeholder="Enter your full name" required />
+          </div>
+          <div>
+            <label for="registration_number">Registration / Staff Number</label>
+            <input type="text" id="registration_number" name="registration_number" placeholder="Enter registration or staff number" />
+          </div>
+          <div>
+            <label for="email">Email Address</label>
+            <input type="email" id="email" name="email" placeholder="Enter your email address" required />
+          </div>
+          <div>
+            <label for="phone">Phone Number</label>
+            <input type="tel" id="phone" name="phone" placeholder="Enter your phone number" />
+          </div>
+          <div>
+            <label for="password">Password</label>
+            <div style="position:relative;">
+              <input type="password" id="password" name="password" placeholder="Create a password" required minlength="6" style="padding-right:42px;" />
+              <button type="button" id="toggle-pw1" style="position:absolute; right:10px; top:50%; transform:translateY(-50%); background:none; border:none; cursor:pointer; color:var(--ueab-gray);">👁</button>
+            </div>
+          </div>
+          <div>
+            <label for="confirm_password">Confirm Password</label>
+            <div style="position:relative;">
+              <input type="password" id="confirm_password" name="confirm_password" placeholder="Confirm your password" required minlength="6" style="padding-right:42px;" />
+              <button type="button" id="toggle-pw2" style="position:absolute; right:10px; top:50%; transform:translateY(-50%); background:none; border:none; cursor:pointer; color:var(--ueab-gray);">👁</button>
+            </div>
+          </div>
+          <div class="full">
+            <button type="submit" class="btn btn-primary" style="width:100%;" id="register-btn">Register</button>
+          </div>
+        </form>
+
+        <p class="text-center" style="margin-top:18px; font-size:14px;">
+          Already have an account? <a href="login.html">Login here</a>
+        </p>
+      </div>
+    </div>
+  </div>
+
+  <script src="js/api.js"></script>
+  <script src="js/demo-mode.js"></script>
+  <script>
+    ['toggle-pw1', 'toggle-pw2'].forEach(id => {
+      document.getElementById(id).addEventListener('click', () => {
+        const pw = document.getElementById(id === 'toggle-pw1' ? 'password' : 'confirm_password');
+        pw.type = pw.type === 'password' ? 'text' : 'password';
+      });
+    });
+
+    document.getElementById('register-form').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const data = Object.fromEntries(new FormData(e.target));
+      const btn  = document.getElementById('register-btn');
+      btn.disabled = true;
+      btn.innerHTML = '<span class="spinner"></span> Creating account...';
+      try {
+        const { token, user } = await API.register(data);
+        Auth.setSession(token, user);
+        toast('Account created! Welcome, ' + user.full_name, 'success');
+        setTimeout(() => location.href = 'dashboard.html', 700);
+      } catch (err) {
+        toast(err.message, 'error');
+        btn.disabled = false;
+        btn.textContent = 'Register';
+      }
+    });
+
+    if (Auth.isLoggedIn()) location.href = 'dashboard.html';
+  </script>
+</body>
+</html>
