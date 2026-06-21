@@ -8,59 +8,56 @@
   <link rel="stylesheet" href="css/main.css" />
 </head>
 <body>
-  <div id="sidebar-slot"></div>
-  <main class="main">
-    <div class="card" style="max-width:800px; border-top: 4px solid var(--status-found);">
-      <h3 style="margin:0 0 8px; color: var(--ueab-navy);">Report a Found Document</h3>
-      <p class="text-muted" style="margin: 0 0 20px;">Submit details of a document you have found. The system will check for matching lost reports and notify the owner.</p>
+  <div class="card" style="max-width:800px; border-top: 4px solid var(--status-found);">
+    <h3 style="margin:0 0 8px; color: var(--ueab-navy);">Report a Found Document</h3>
+    <p class="text-muted" style="margin: 0 0 20px;">Submit details of a document you have found. The system will check for matching lost reports and notify the owner.</p>
 
-      <form id="found-form" class="form-grid">
-        <div>
-          <label>Document Type</label>
-          <select name="document_type" required>
-            <option value="">Select document type</option>
-            <option>Student ID</option>
-            <option>National ID</option>
-            <option>Passport</option>
-            <option>Driver's License</option>
-            <option>Work Permit</option>
-            <option>Other</option>
-          </select>
+    <form id="found-form" class="form-grid">
+      <div>
+        <label>Document Type</label>
+        <select name="document_type" required>
+          <option value="">Select document type</option>
+          <option>Student ID</option>
+          <option>National ID</option>
+          <option>Passport</option>
+          <option>Driver's License</option>
+          <option>Work Permit</option>
+          <option>Other</option>
+        </select>
+      </div>
+      <div>
+        <label>Document Number</label>
+        <input type="text" name="document_number" placeholder="Enter document number" required />
+      </div>
+      <div>
+        <label>Date Found</label>
+        <input type="date" name="date_found" required />
+      </div>
+      <div>
+        <label>Location Found</label>
+        <input type="text" name="location_found" placeholder="Enter location where document was found" required />
+      </div>
+      <div>
+        <label>Finder Contact (Phone)</label>
+        <input type="tel" name="finder_contact" placeholder="Enter your contact number" />
+      </div>
+      <div>
+        <label>Upload Document Image (Optional)</label>
+        <div class="dropzone" id="dropzone">
+          <input type="file" id="image" name="image" accept="image/*" hidden />
+          <div>📁 Click to upload or drag and drop</div>
+          <div style="font-size:12px; margin-top:6px;">PNG, JPG, WEBP up to 5MB</div>
         </div>
-        <div>
-          <label>Document Number</label>
-          <input type="text" name="document_number" placeholder="Enter document number" required />
-        </div>
-        <div>
-          <label>Date Found</label>
-          <input type="date" name="date_found" required />
-        </div>
-        <div>
-          <label>Location Found</label>
-          <input type="text" name="location_found" placeholder="Enter location where document was found" required />
-        </div>
-        <div>
-          <label>Finder Contact (Phone)</label>
-          <input type="tel" name="finder_contact" placeholder="Enter your contact number" />
-        </div>
-        <div>
-          <label>Upload Document Image (Optional)</label>
-          <div class="dropzone" id="dropzone">
-            <input type="file" id="image" name="image" accept="image/*" hidden />
-            <div>📁 Click to upload or drag and drop</div>
-            <div style="font-size:12px; margin-top:6px;">PNG, JPG, WEBP up to 5MB</div>
-          </div>
-        </div>
-        <div class="full">
-          <label>Description (Optional)</label>
-          <textarea name="description" placeholder="Provide any additional details (condition, where you handed it over, etc.)"></textarea>
-        </div>
-        <div class="full">
-          <button type="submit" class="btn btn-primary" id="submit-btn" style="width:100%;">Submit Report</button>
-        </div>
-      </form>
-    </div>
-  </main>
+      </div>
+      <div class="full">
+        <label>Description (Optional)</label>
+        <textarea name="description" placeholder="Provide any additional details (condition, where you handed it over, etc.)"></textarea>
+      </div>
+      <div class="full">
+        <button type="submit" class="btn btn-primary" id="submit-btn" style="width:100%;">Submit Report</button>
+      </div>
+    </form>
+  </div>
 
   <script src="js/api.js"></script>
   <script src="js/demo-mode.js"></script>
@@ -69,7 +66,6 @@
     buildAppLayout({
       active: 'report-found.html',
       title: 'Report Found Document',
-      breadcrumb: 'Dashboard / Report Found',
     });
 
     const drop = document.getElementById('dropzone');

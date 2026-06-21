@@ -4,10 +4,15 @@
    ================================================================= */
 
 const API_BASE = (() => {
+  // Allow override via window.API_BASE for local dev, else fall back to
+  // same-origin (/api) which works when the frontend is served from the
+  // backend in production.
   if (window.API_BASE) return window.API_BASE.replace(/\/$/, '');
+  // If frontend is served on a different port, point at the API directly.
   if (location.port === '5500' || location.port === '8080' || location.port === '3000') {
     return 'http://localhost:5000/api';
   }
+  // If served as static site, use the deployed backend
   if (location.hostname.includes('onrender.com') || location.hostname.includes('netlify.app') || location.hostname.includes('vercel.app')) {
     return 'https://identity-card-m486.onrender.com/api';
   }
@@ -15,11 +20,11 @@ const API_BASE = (() => {
 })();
 
 const TOKEN_KEY = 'ueab_ims_token';
-const USER_KEY = 'ueab_ims_user';
+const USER_KEY  = 'ueab_ims_user';
 
 const Auth = {
   getToken: () => localStorage.getItem(TOKEN_KEY),
-  getUser: () => {
+  getUser:  () => {
     try { return JSON.parse(localStorage.getItem(USER_KEY) || 'null'); }
     catch { return null; }
   },
@@ -32,7 +37,7 @@ const Auth = {
     localStorage.removeItem(USER_KEY);
   },
   isLoggedIn: () => !!localStorage.getItem(TOKEN_KEY),
-  isAdmin: () => (Auth.getUser()?.role === 'admin'),
+  isAdmin:    () => (Auth.getUser()?.role === 'admin'),
 };
 
 async function api(path, { method = 'GET', body, formData, query } = {}) {
@@ -76,34 +81,34 @@ async function api(path, { method = 'GET', body, formData, query } = {}) {
 }
 
 const API = {
-  register: (data) => api('/auth/register', { method: 'POST', body: data }),
-  login: (data) => api('/auth/login', { method: 'POST', body: data }),
-  me: () => api('/auth/me'),
+  register: (data)        => api('/auth/register', { method: 'POST', body: data }),
+  login:    (data)        => api('/auth/login',    { method: 'POST', body: data }),
+  me:       ()            => api('/auth/me'),
 
-  reportLost: (data) => api('/lost', { method: 'POST', body: data }),
-  myLost: () => api('/lost/mine'),
-  allLost: () => api('/lost'),
-  getLost: (id) => api(`/lost/${id}`),
-  updateLost: (id, st) => api(`/lost/${id}/status`, { method: 'PATCH', body: { status: st } }),
-  myStats: () => api('/lost/stats/me'),
+  reportLost:    (data)   => api('/lost',        { method: 'POST', body: data }),
+  myLost:        ()       => api('/lost/mine'),
+  allLost:       ()       => api('/lost'),
+  getLost:       (id)     => api(`/lost/${id}`),
+  updateLost:    (id, st) => api(`/lost/${id}/status`, { method: 'PATCH', body: { status: st } }),
+  myStats:       ()       => api('/lost/stats/me'),
 
-  reportFound: (formData) => api('/found', { method: 'POST', formData }),
-  myFound: () => api('/found/mine'),
-  updateFound: (id, st) => api(`/found/${id}/status`, { method: 'PATCH', body: { status: st } }),
+  reportFound:   (formData)   => api('/found', { method: 'POST', formData }),
+  myFound:       ()       => api('/found/mine'),
+  updateFound:   (id, st) => api(`/found/${id}/status`, { method: 'PATCH', body: { status: st } }),
 
-  search: (q) => api('/search', { query: q }),
+  search:        (q)      => api('/search', { query: q }),
 
-  listNotifs: () => api('/notifications'),
-  unreadCount: () => api('/notifications/unread-count'),
-  markRead: (id) => api(`/notifications/${id}/read`, { method: 'PATCH' }),
-  markAllRead: () => api('/notifications/mark-all-read', { method: 'PATCH' }),
+  listNotifs:        ()  => api('/notifications'),
+  unreadCount:       ()  => api('/notifications/unread-count'),
+  markRead:          (id)=> api(`/notifications/${id}/read`, { method: 'PATCH' }),
+  markAllRead:       ()  => api('/notifications/mark-all-read', { method: 'PATCH' }),
 
-  adminOverview: () => api('/admin/overview'),
-  adminUsers: () => api('/admin/users'),
-  setUserActive: (id, active) => api(`/admin/users/${id}/active`, { method: 'PATCH', body: { is_active: active } }),
-  adminReports: () => api('/admin/reports'),
-  adminMatches: () => api('/admin/matches'),
-  adminActivity: () => api('/admin/activity'),
+  adminOverview:  ()  => api('/admin/overview'),
+  adminUsers:     ()  => api('/admin/users'),
+  setUserActive:  (id, active) => api(`/admin/users/${id}/active`, { method: 'PATCH', body: { is_active: active } }),
+  adminReports:   ()  => api('/admin/reports'),
+  adminMatches:   ()  => api('/admin/matches'),
+  adminActivity:  ()  => api('/admin/activity'),
 };
 
 function toast(message, type = 'info', duration = 3500) {
