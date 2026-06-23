@@ -82,7 +82,7 @@
           if (h < 18) return 'Good afternoon';
           return 'Good evening';
         })();
-        document.getElementById('welcome-line').innerHTML = `${greet}, <b>${user.full_name}</b> — welcome to your UEAB IMS dashboard.`;
+        document.getElementById('welcome-line').innerHTML = `${greet}, <b style="color:#fff;">${user.full_name}</b> — welcome to your UEAB IMS dashboard.`;
 
         const s = await API.myStats();
         document.getElementById('stat-lost').textContent      = s.lost;
