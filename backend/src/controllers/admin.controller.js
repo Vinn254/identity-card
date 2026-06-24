@@ -14,8 +14,8 @@ async function logActivity(userId, action, entityType, entityId, details) {
 }
 
 exports.overview = async (req, res) => {
-  const [users, lost, found, recovered, matched, pendingLost, pendingFound] = await Promise.all([
-    supabase.from('users').select('*', { count: 'exact', head: true }),
+  const [activeUsers, lost, found, recovered, matched, pendingLost, pendingFound] = await Promise.all([
+    supabase.from('users').select('*', { count: 'exact', head: true }).eq('is_active', true),
     supabase.from('lost_documents').select('*', { count: 'exact', head: true }),
     supabase.from('found_documents').select('*', { count: 'exact', head: true }),
     supabase.from('lost_documents').select('*', { count: 'exact', head: true }).eq('status', 'recovered'),
@@ -25,7 +25,7 @@ exports.overview = async (req, res) => {
   ]);
 
   res.json({
-    users: users.count || 0,
+    users: activeUsers.count || 0,
     lost: lost.count || 0,
     found: found.count || 0,
     recovered: recovered.count || 0,
@@ -123,4 +123,27 @@ exports.activity = async (req, res) => {
   }));
 
   res.json({ activity });
+};
+
+exports.allNotifications = async (req, res) => {
+  const { data: rows, error } = await supabase
+    .from('notifications')
+    .select('id, user_id, title, message, type, is_read, created_at')
+    .order('created_at', { ascending: false });
+
+  if (error) return res.status(500).json({ error: error.message });
+
+  const userIds = [...new Set((rows || []).map(r => r.user_id).filter(Boolean))];
+  if (userIds.length === 0) return res.json({ notifications: rows });
+
+  const { data: users } = await supabase.from('users').select('id, full_name').in('id', userIds);
+  const userMap = {};
+  (users || []).forEach(u => userMap[u.id] = u.full_name);
+
+  const notifications = (rows || []).map(n => ({
+    ...n,
+    user_name: userMap[n.user_id] || 'Unknown'
+  }));
+
+  res.json({ notifications });
 };

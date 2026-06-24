@@ -106,9 +106,10 @@ const API = {
   adminOverview:  ()  => api('/admin/overview'),
   adminUsers:     ()  => api('/admin/users'),
   setUserActive:  (id, active) => api(`/admin/users/${id}/active`, { method: 'PATCH', body: { is_active: active } }),
-  adminReports:   ()  => api('/admin/reports'),
-  adminMatches:   ()  => api('/admin/matches'),
-  adminActivity:  ()  => api('/admin/activity'),
+adminReports:   ()  => api('/admin/reports'),
+   adminMatches:   ()  => api('/admin/matches'),
+   adminActivity:  ()  => api('/admin/activity'),
+   adminAllNotifs: () => api('/admin/all-notifications'),
 };
 
 function toast(message, type = 'info', duration = 3500) {

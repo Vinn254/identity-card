@@ -13,7 +13,7 @@
       <div class="stat-icon purple">👥</div>
       <div>
         <div class="stat-num" id="a-users">—</div>
-        <div class="stat-label">Users</div>
+        <div class="stat-label">Active Users</div>
       </div>
       <a class="stat-link">View all →</a>
     </div>
@@ -33,7 +33,7 @@
       </div>
       <a class="stat-link">View all →</a>
     </div>
-    <div class="stat-card" id="recovered-card">
+    <div class="stat-card" id="recovered-card" style="cursor:pointer;">
       <div class="stat-icon gold">✅</div>
       <div>
         <div class="stat-num" id="a-recovered">—</div>
@@ -41,10 +41,28 @@
       </div>
       <a class="stat-link">View all →</a>
     </div>
+    <div class="stat-card" id="notif-card" style="cursor:pointer;">
+      <div class="stat-icon blue">🔔</div>
+      <div>
+        <div class="stat-num" id="a-notif">—</div>
+        <div class="stat-label">Notifications</div>
+      </div>
+      <a class="stat-link">View all →</a>
+    </div>
   </div>
 
-  <div class="card" style="margin-top:24px;">
-    <h2 style="margin:0 0 12px; color: var(--ueab-navy); font-size:18px;">Recent Reported Lost Documents</h2>
+  <div class="card" style="margin-top:24px; display:none;" id="users-section">
+    <h2 style="margin:0 0 12px; color: var(--ueab-navy); font-size:18px;">User Management</h2>
+    <div class="table-wrap" style="box-shadow:none; max-height:400px; overflow:auto;">
+      <table>
+        <thead><tr><th>Avatar</th><th>Name</th><th>Email</th><th>Reg #</th><th>Role</th><th>Status</th><th>Action</th></tr></thead>
+        <tbody id="users-tbody"><tr><td colspan="7" class="text-center text-muted">Loading...</td></tr></tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="card" style="margin-top:24px; display:none;" id="lost-section">
+    <h2 style="margin:0 0 12px; color: var(--ueab-navy); font-size:18px;">All Lost Documents</h2>
     <div class="table-wrap" style="box-shadow:none; max-height:300px; overflow:auto;">
       <table>
         <thead>
@@ -57,8 +75,8 @@
     </div>
   </div>
 
-  <div class="card" style="margin-top:24px;">
-    <h2 style="margin:0 0 12px; color: var(--ueab-navy); font-size:18px;">Recent Found Documents</h2>
+  <div class="card" style="margin-top:24px; display:none;" id="found-section">
+    <h2 style="margin:0 0 12px; color: var(--ueab-navy); font-size:18px;">All Found Documents</h2>
     <div class="table-wrap" style="box-shadow:none; max-height:300px; overflow:auto;">
       <table>
         <thead>
@@ -71,12 +89,30 @@
     </div>
   </div>
 
-  <div class="card" style="margin-top:24px; display:none;" id="users-section">
-    <h2 style="margin:0 0 12px; color: var(--ueab-navy); font-size:18px;">User Management</h2>
-    <div class="table-wrap" style="box-shadow:none; max-height:400px; overflow:auto;">
+  <div class="card" style="margin-top:24px; display:none;" id="recovered-section">
+    <h2 style="margin:0 0 12px; color: var(--ueab-navy); font-size:18px;">Recovered Documents</h2>
+    <div class="table-wrap" style="box-shadow:none; max-height:300px; overflow:auto;">
       <table>
-        <thead><tr><th>Avatar</th><th>Name</th><th>Email</th><th>Reg #</th><th>Role</th><th>Status</th><th>Action</th></tr></thead>
-        <tbody id="users-tbody"><tr><td colspan="7" class="text-center text-muted">Loading...</td></tr></tbody>
+        <thead>
+          <tr><th>Type</th><th>Document</th><th>Owner</th><th>Found At</th><th>Date Found</th><th>Status</th></tr>
+        </thead>
+        <tbody id="recovered-tbody">
+          <tr><td colspan="6" class="text-center text-muted">Loading...</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="card" style="margin-top:24px; display:none;" id="notif-section">
+    <h2 style="margin:0 0 12px; color: var(--ueab-navy); font-size:18px;">All Notifications</h2>
+    <div class="table-wrap" style="box-shadow:none; max-height:300px; overflow:auto;">
+      <table>
+        <thead>
+          <tr><th>User</th><th>Title</th><th>Message</th><th>Type</th><th>Date</th></tr>
+        </thead>
+        <tbody id="notif-tbody">
+          <tr><td colspan="5" class="text-center text-muted">Loading...</td></tr>
+        </tbody>
       </table>
     </div>
   </div>
@@ -100,14 +136,19 @@
     async function loadOverview() {
       const o = await API.adminOverview();
       document.getElementById('a-users').textContent     = o.users;
-      document.getElementById('a-lost').textContent      = o.lost;
-      document.getElementById('a-found').textContent     = o.found;
+      document.getElementById('a-lost').textContent    = o.lost;
+      document.getElementById('a-found').textContent    = o.found;
       document.getElementById('a-recovered').textContent = o.recovered;
+    }
+
+    async function loadNotifCount() {
+      const { notifications } = await API.adminAllNotifs();
+      document.getElementById('a-notif').textContent = notifications.length;
     }
 
     async function loadLostReports() {
       const { reports } = await API.adminReports();
-      const lost = reports.filter(r => r.report_type === 'lost').slice(0, 8);
+      const lost = reports.filter(r => r.report_type === 'lost');
       const tbody = document.getElementById('lost-tbody');
       tbody.innerHTML = lost.length ? lost.map(r => `
         <tr>
@@ -123,7 +164,7 @@
 
     async function loadFoundReports() {
       const { reports } = await API.adminReports();
-      const found = reports.filter(r => r.report_type === 'found').slice(0, 8);
+      const found = reports.filter(r => r.report_type === 'found');
       const tbody = document.getElementById('found-tbody');
       tbody.innerHTML = found.length ? found.map(r => `
         <tr>
@@ -135,6 +176,22 @@
           <td><span class="badge badge-${r.status}">${r.status}</span></td>
         </tr>
       `).join('') : '<tr><td colspan="6" class="text-center text-muted">No found reports yet</td></tr>';
+    }
+
+    async function loadRecovered() {
+      const { reports } = await API.adminReports();
+      const recovered = reports.filter(r => r.status === 'recovered');
+      const tbody = document.getElementById('recovered-tbody');
+      tbody.innerHTML = recovered.length ? recovered.map(r => `
+        <tr>
+          <td>${r.document_type}</td>
+          <td>${r.document_number}</td>
+          <td>${r.owner_name}</td>
+          <td>${r.location_found || '—'}</td>
+          <td>${fmtDate(r.created_at)}</td>
+          <td><span class="badge badge-recovered">${r.status}</span></td>
+        </tr>
+      `).join('') : '<tr><td colspan="6" class="text-center text-muted">No recovered documents yet</td></tr>';
     }
 
     async function loadUsers() {
@@ -166,22 +223,42 @@
       }));
     }
 
-    // Event listeners for cards
-    document.getElementById('users-card').addEventListener('click', () => {
-      const sec = document.getElementById('users-section');
-      sec.style.display = sec.style.display === 'none' ? 'block' : 'none';
-      if (!sec.dataset.loaded) { loadUsers(); sec.dataset.loaded = '1'; }
-    });
+    async function loadAllNotifications() {
+      const { notifications } = await API.adminAllNotifs();
+      const tbody = document.getElementById('notif-tbody');
+      tbody.innerHTML = notifications.length ? notifications.map(n => `
+        <tr>
+          <td>${n.user_name}</td>
+          <td>${n.title}</td>
+          <td>${n.message}</td>
+          <td><span class="badge badge-${n.type === 'info' ? 'pending' : n.type === 'success' ? 'success' : 'matched'}">${n.type}</span></td>
+          <td>${fmtDate(n.created_at)}</td>
+        </tr>
+      `).join('') : '<tr><td colspan="5" class="text-center text-muted">No notifications yet</td></tr>';
+    }
 
-    (async function init() {
+    function toggleSection(id, loader) {
+      const secs = ['users-section', 'lost-section', 'found-section', 'recovered-section', 'notif-section'];
+      secs.forEach(s => { if (s !== id) document.getElementById(s).style.display = 'none'; });
+      const sec = document.getElementById(id);
+      sec.style.display = sec.style.display === 'none' ? 'block' : 'none';
+      if (!sec.dataset.loaded) { loader(); sec.dataset.loaded = '1'; }
+    }
+
+    document.getElementById('users-card').addEventListener('click', () => toggleSection('users-section', loadUsers));
+    document.getElementById('lost-card').addEventListener('click', () => toggleSection('lost-section', loadLostReports));
+    document.getElementById('found-card').addEventListener('click', () => toggleSection('found-section', loadFoundReports));
+    document.getElementById('recovered-card').addEventListener('click', () => toggleSection('recovered-section', loadRecovered));
+    document.getElementById('notif-card').addEventListener('click', () => toggleSection('notif-section', loadAllNotifications));
+
+    async function refreshCounts() {
       try {
         await loadOverview();
-        await loadLostReports();
-        await loadFoundReports();
-      } catch (err) {
-        toast(err.message, 'error');
-      }
-    })();
-    loadNotifBadge();
+        await loadNotifCount();
+      } catch (e) {}
+    }
+
+    setInterval(refreshCounts, 3000);
+    refreshCounts();
   </script>
 </body></html>

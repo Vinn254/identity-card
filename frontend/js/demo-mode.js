@@ -182,7 +182,8 @@
       const users = load(STORE_KEYS.users, []);
       const lost  = load(STORE_KEYS.lost, []);
       const found = load(STORE_KEYS.found, []);
-      return { users: users.length, lost: lost.length, found: found.length, recovered: lost.filter(l => l.status === 'recovered').length, matched: lost.filter(l => l.status === 'matched').length, pending_lost: lost.filter(l => l.status === 'pending').length, pending_found: found.filter(f => f.status === 'pending').length };
+      const activeUsers = users.filter(u => u.is_active === 1).length;
+      return { users: activeUsers, lost: lost.length, found: found.length, recovered: lost.filter(l => l.status === 'recovered').length, matched: lost.filter(l => l.status === 'matched').length, pending_lost: lost.filter(l => l.status === 'pending').length, pending_found: found.filter(f => f.status === 'pending').length };
     }
     if (path === '/admin/users') return { users: load(STORE_KEYS.users, []).map(publicUser) };
     if (path === '/admin/reports') {
@@ -199,6 +200,11 @@
         const f = found.find(x => x.id === l.matched_with_id);
         return { ...l, lost_status: l.status, found_status: f?.status, location_found: f?.location_found, date_found: f?.date_found, owner_name: users.find(u => u.id === l.user_id)?.full_name, finder_name: users.find(u => u.id === f?.user_id)?.full_name };
       }) };
+    }
+    if (path === '/admin/all-notifications') {
+      const notifs = load(STORE_KEYS.notifs, []);
+      const users = load(STORE_KEYS.users, []);
+      return { notifications: notifs.map(n => ({ ...n, user_name: users.find(u => u.id === n.user_id)?.full_name || 'Unknown' })) };
     }
     if (path === '/admin/activity') return { activity: load(STORE_KEYS.activity, []) };
 

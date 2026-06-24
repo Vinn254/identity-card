@@ -9,5 +9,6 @@ router.patch('/users/:id/active', authRequired, requireRole('admin'), ctrl.setAc
 router.get('/reports',            authRequired, requireRole('admin', 'security', 'staff'), ctrl.allReports);
 router.get('/matches',            authRequired, requireRole('admin', 'security', 'staff'), ctrl.matches);
 router.get('/activity',           authRequired, requireRole('admin'), ctrl.activity);
+router.get('/all-notifications',  authRequired, requireRole('admin'), ctrl.allNotifications);
 
 module.exports = router;

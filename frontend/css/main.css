@@ -72,6 +72,7 @@ img { max-width: 100%; display: block; }
 .badge-claimed   { background: #D4EDDA; color: #155724; }
 .badge-closed    { background: #E2E3E5; color: #383D41; }
 .badge-lost      { background: #F8D7DA; color: #721C24; }
+.badge-success   { background: #D4EDDA; color: #155724; }
 
 .text-muted { color: var(--ueab-gray); }
 .text-center { text-align: center; }
@@ -169,7 +170,7 @@ img { max-width: 100%; display: block; }
 }
 
 /* ---------- Dashboard cards ------------------------------------ */
-.stat-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px; }
+.stat-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 20px; }
 .stat-card {
   background: #fff; padding: 22px; border-radius: var(--radius);
   box-shadow: var(--shadow); display: flex; flex-direction: column; gap: 12px;
@@ -182,6 +183,7 @@ img { max-width: 100%; display: block; }
 .stat-icon.green  { background: var(--status-found); }
 .stat-icon.gold   { background: var(--ueab-gold); color: var(--ueab-navy); }
 .stat-icon.red    { background: var(--status-lost); }
+.stat-icon.blue   { background: #007BFF; }
 .stat-num { font-size: 32px; font-weight: 700; color: var(--ueab-navy); }
 .stat-label { color: var(--ueab-gray); font-size: 13px; }
 
