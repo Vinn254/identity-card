@@ -26,15 +26,8 @@
       margin: 0 auto 12px;
       background: rgba(255,255,255,.1);
     }
-    .header-section h2 {
-      margin: 0 0 6px;
-      font-size: 22px;
-    }
-    .header-section p {
-      opacity: .85;
-      font-size: 13px;
-      margin: 0;
-    }
+    .header-section h2 { margin: 0 0 6px; font-size: 22px; }
+    .header-section p { opacity: .85; font-size: 13px; margin: 0; }
     .auth-wrap {
       display: flex;
       align-items: center;
@@ -99,7 +92,7 @@
         });
         Auth.setSession(token, user);
         toast('Welcome back, ' + user.full_name + '!', 'success');
-        setTimeout(() => location.href = 'dashboard.html', 600);
+        setTimeout(() => location.href = user.role === 'admin' ? 'admin.html' : 'dashboard.html', 600);
       } catch (err) {
         toast(err.message, 'error');
         btn.disabled = false;
