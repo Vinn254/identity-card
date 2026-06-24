@@ -100,7 +100,10 @@
       }
     });
 
-    if (Auth.isLoggedIn()) location.href = 'dashboard.html';
+    if (Auth.isLoggedIn()) {
+      if (Auth.isAdmin()) location.href = 'admin.html';
+      else location.href = 'dashboard.html';
+    }
   </script>
 </body>
 </html>
