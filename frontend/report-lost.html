@@ -9,23 +9,26 @@
 </head>
 <body>
   <div class="card" style="max-width:800px; border-top: 4px solid var(--ueab-navy);">
-    <h3 style="margin:0 0 8px; color: var(--ueab-navy);">Report a Lost Document</h3>
-    <p class="text-muted" style="margin: 0 0 20px;">Fill in the details of the document you have lost. The system will automatically check for matching found reports.</p>
+    <h3 style="margin:0 0 8px; color: var(--ueab-navy);">Report a Lost Item</h3>
+    <p class="text-muted" style="margin: 0 0 20px;">Fill in the details of the item you have lost. The system will automatically check for matching found reports.</p>
 
     <form id="lost-form" class="form-grid">
       <div>
-        <label>Document Type</label>
-<select name="document_type" required>
-           <option value="">Select document type</option>
-           <option>Student ID</option>
-           <option>National ID</option>
-           <option>Passport</option>
-           <option>Other</option>
-         </select>
+        <label>Item Type</label>
+        <select name="document_type" required>
+          <option value="">Select item type</option>
+          <option>Student ID</option>
+          <option>National ID</option>
+          <option>Passport</option>
+          <option>Laptop</option>
+          <option>Phone</option>
+          <option>Charger</option>
+          <option>Other</option>
+        </select>
       </div>
       <div>
-        <label>Document Number</label>
-        <input type="text" name="document_number" placeholder="Enter document number" required />
+        <label>Serial Number / ID Number</label>
+        <input type="text" name="document_number" placeholder="Enter serial or ID number" required />
       </div>
       <div>
         <label>Date Lost</label>
@@ -33,11 +36,19 @@
       </div>
       <div>
         <label>Location Lost</label>
-        <input type="text" name="location_lost" placeholder="Enter location where document was lost" />
+        <input type="text" name="location_lost" placeholder="Enter location where item was lost" />
+      </div>
+      <div class="full">
+        <label>Brand / Model (Optional)</label>
+        <input type="text" name="brand" placeholder="Enter brand or model for electronics" />
+      </div>
+      <div class="full">
+        <label>Color (Optional)</label>
+        <input type="text" name="color" placeholder="Enter color of the item" />
       </div>
       <div class="full">
         <label>Description (Optional)</label>
-        <textarea name="description" placeholder="Provide any additional details (color, distinguishing marks, etc.)"></textarea>
+        <textarea name="description" placeholder="Provide any additional details (distinguishing marks, accessories, etc.)"></textarea>
       </div>
       <div class="full">
         <button type="submit" class="btn btn-primary" id="submit-btn" style="width:100%;">Submit Report</button>
@@ -51,7 +62,7 @@
   <script>
     buildAppLayout({
       active: 'report-lost.html',
-      title: 'Report Lost Document',
+      title: 'Report Lost Item',
     });
 
     document.getElementById('lost-form').addEventListener('submit', async (e) => {

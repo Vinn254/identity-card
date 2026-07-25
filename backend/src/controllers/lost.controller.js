@@ -50,14 +50,14 @@ async function tryAutoMatchLost(lostId, docType, docNumber) {
 }
 
 exports.create = async (req, res) => {
-  const { document_type, document_number, date_lost, location_lost, description } = req.body;
+  const { document_type, document_number, date_lost, location_lost, description, brand, color } = req.body;
   if (!document_type || !document_number || !date_lost) {
     return res.status(400).json({ error: 'document_type, document_number and date_lost are required' });
   }
 
   const { data: lost, error } = await supabase
     .from('lost_documents')
-    .insert({ user_id: req.user.id, document_type, document_number, date_lost, location_lost, description })
+    .insert({ user_id: req.user.id, document_type, document_number, date_lost, location_lost, description, brand, color })
     .select()
     .single();
 

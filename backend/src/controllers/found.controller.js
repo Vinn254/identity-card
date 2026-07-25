@@ -46,7 +46,7 @@ async function tryAutoMatchFound(foundId, docType, docNumber) {
 }
 
 exports.create = async (req, res) => {
-  const { document_type, document_number, date_found, location_found, finder_contact, description } = req.body;
+  const { document_type, document_number, date_found, location_found, finder_contact, description, brand, color } = req.body;
   if (!document_type || !document_number || !date_found || !location_found) {
     return res.status(400).json({ error: 'document_type, document_number, date_found and location_found are required' });
   }
@@ -56,7 +56,7 @@ exports.create = async (req, res) => {
   const { data: found, error } = await supabase
     .from('found_documents')
     .insert({
-      user_id: req.user.id, document_type, document_number, date_found, location_found, finder_contact, description, image_path: imagePath
+      user_id: req.user.id, document_type, document_number, date_found, location_found, finder_contact, description, image_path: imagePath, brand, color
     })
     .select()
     .single();
