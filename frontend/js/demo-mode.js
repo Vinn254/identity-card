@@ -95,6 +95,7 @@
 
   window.__demoApi = async function (path, opts = {}) {
     const { method = 'GET', body, formData, query } = opts;
+    const data = formData ? Object.fromEntries(formData) : (body || {});
     const params = query || {};
     const q  = (params.q || '').trim().toLowerCase();
     const dn = (params.doc_number || '').trim().toLowerCase();
@@ -107,8 +108,8 @@
 
     if (path === '/auth/register' && method === 'POST') {
       const users = load(STORE_KEYS.users, []);
-      if (users.find(u => u.email === body.email)) throw new Error('Email already registered');
-      const u = { id: nextId(users), ...body, role: 'student', is_active: 1, created_at: nowIso() };
+      if (users.find(u => u.email === data.email)) throw new Error('Email already registered');
+      const u = { id: nextId(users), ...data, role: 'student', is_active: 1, created_at: nowIso() };
       users.push(u); save(STORE_KEYS.users, users);
       const token = 'demo.' + btoa(JSON.stringify({ id: u.id, email: u.email, role: u.role }));
       Auth.setSession(token, publicUser(u));
@@ -116,8 +117,8 @@
     }
     if (path === '/auth/login' && method === 'POST') {
       const users = load(STORE_KEYS.users, []);
-      const u = users.find(x => x.email === body.email || x.registration_number === body.email);
-      if (!u || u.password !== body.password) throw new Error('Invalid credentials');
+      const u = users.find(x => x.email === data.email || x.registration_number === data.email);
+      if (!u || u.password !== data.password) throw new Error('Invalid credentials');
       const token = 'demo.' + btoa(JSON.stringify({ id: u.id, email: u.email, role: u.role }));
       Auth.setSession(token, publicUser(u));
       return { message: 'Login successful', token, user: publicUser(u) };
@@ -131,7 +132,7 @@
 
     if (path === '/lost' && method === 'POST') {
       const lost = load(STORE_KEYS.lost, []);
-      const r = { id: nextId(lost), user_id: me.id, ...body, status: 'pending', matched_with_id: null, created_at: nowIso() };
+      const r = { id: nextId(lost), user_id: me.id, ...data, status: 'pending', matched_with_id: null, created_at: nowIso() };
       lost.unshift(r); save(STORE_KEYS.lost, lost);
       const matched = tryMatch(r, 'lost');
       return { message: matched ? 'Lost reported. Match found!' : 'Lost reported', lost: r, matched };
@@ -146,7 +147,7 @@
 
     if (path === '/found' && method === 'POST') {
       const found = load(STORE_KEYS.found, []);
-      const r = { id: nextId(found), user_id: me.id, ...body, status: 'pending', matched_with_id: null, created_at: nowIso() };
+      const r = { id: nextId(found), user_id: me.id, ...data, status: 'pending', matched_with_id: null, created_at: nowIso() };
       found.unshift(r); save(STORE_KEYS.found, found);
       const matched = tryMatch(r, 'found');
       return { message: matched ? 'Found reported. Owner notified!' : 'Found reported', found: r, matched };
